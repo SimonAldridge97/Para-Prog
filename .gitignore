@@ -1,0 +1,6 @@
+
+Assignment1/mergesort
+Assignment1/*.o
+Assignment1/results.txt
+Assignment1/benchmark_plot.png
+Assignment1/venv/
