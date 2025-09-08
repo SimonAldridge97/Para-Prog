@@ -185,20 +185,20 @@ int main (){
         // output state every M steps
         if (t % M == 0) {
             outFile << Particles.size();
-            for (auto &p : Particles) {
-                outFile << "\t"
-                    //<< t << "\t" 
-                    //<< p.getPID() << "\t" 
-                    << p.getPMass() << "\t"
-                    << p.getPLocation().x << "\t"
-                    << p.getPLocation().y << "\t"
-                    << p.getPLocation().z << "\t"
-                    << p.getPVelocity().x << "\t"
-                    << p.getPVelocity().y << "\t"
-                    << p.getPVelocity().z << "\t"
-                    << p.getPForce().x << "\t"
-                    << p.getPForce().y << "\t"
-                    << p.getPForce().z;
+for (auto &p : Particles) {
+        outFile << "\t"
+            //<< t << "\t" 
+            //<< p.getPID() << "\t" 
+            << p.getPMass() << "\t"
+            << p.getPLocation().x << "\t"
+            << p.getPLocation().y << "\t"
+            << p.getPLocation().z << "\t"
+            << p.getPVelocity().x << "\t"
+            << p.getPVelocity().y << "\t"
+            << p.getPVelocity().z << "\t"
+            << p.getPForce().x << "\t"
+            << p.getPForce().y << "\t"
+            << p.getPForce().z;
                 }
                 outFile << "\n";
             }
