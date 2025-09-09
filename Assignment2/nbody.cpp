@@ -2,6 +2,23 @@
 #include <random>
 #include <cmath>
 #include <fstream>
+#include <ctime>
+#include <chrono>
+#include <vector>
+/*
+//<TODO>
+Create timestamps for how long each test takes
+have ~400 steps for the solar system test to verify orbits are behaving correctly
+Fix python plot script so it actually outputs the correct fucking thing
+README with description
+
+
+
+
+*/
+
+
+
 
 //define a variable type to house three coordinates
 struct Vec3{
@@ -46,15 +63,6 @@ struct Vec3{
     }
 };
 
-//function protos
-size_t getInput(const std::string &prompt);
-double initialize();
-Vec3 vectorInitialize();
-Vec3 getDisplacement(Vec3 a, Vec3 b);
-double getMagnitude(Vec3 a);
-Vec3 getDirection(Vec3 a, double magnitude);
-double getForceApplied(double gravity, double mass1, double mass2, double magnitude, double softening);
-Vec3 getForce(double forceApplied, Vec3 direction);
 
 //Particle class definition
 // with getters/setters
@@ -113,6 +121,16 @@ public:
     }
     
 };
+//function protos
+size_t getInput(const std::string &prompt);
+double initialize();
+Vec3 vectorInitialize();
+Vec3 getDisplacement(Vec3 a, Vec3 b);
+double getMagnitude(Vec3 a);
+Vec3 getDirection(Vec3 a, double magnitude);
+double getForceApplied(double gravity, double mass1, double mass2, double magnitude, double softening);
+Vec3 getForce(double forceApplied, Vec3 direction);
+void initializeSolarSystem(std::vector<Particle> &Particles);
 int main (){
 
     //open file to write to
@@ -133,21 +151,29 @@ int main (){
     std::vector<Particle> Particles;
     Particles.reserve(N);
     std::vector<int> timeStep(N);
-    const double gravity = (3337.0 / 500.0) * pow(10, -11); 
-    const double softening = 1e-3;
+    const double gravity = 6.67430e-11;
+    const double softening = 1e9;
 
     //initialize Particles w/
     // ID, mass, location, and velocity
     for (size_t i = 0; i < N; ++i) {
         Particles.push_back(Particle(i, initialize(), vectorInitialize(), vectorInitialize()));
     }
+    //solar system test
+
+    /*initializeSolarSystem(Particles);
+    N = Particles.size();  // now N = 10*/
+
     
     //main loop
     //set Force to zero at each time step
+    //start timer
+    auto start = std::chrono::high_resolution_clock::now();
     for (size_t t=0; t < timeSteps; ++t){
         for (auto &p: Particles){
             p.setPForce({0, 0, 0});
         }
+        
         //compute all forces required for formula
         //i.e displacement b/tw particles, 
         for (size_t i=0; i < Particles.size(); ++i){
@@ -203,6 +229,10 @@ for (auto &p : Particles) {
                 outFile << "\n";
             }
         }
+    //end timer
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "Simulation completed in " << elapsed.count() << " seconds.\n";
     return 0;
 }
 
@@ -221,6 +251,7 @@ double initialize(){
     static std::uniform_real_distribution<double> dist(1.0, 100.0);
     return dist(gen);
 }
+
 //to initialize our Vec3s
 Vec3 vectorInitialize(){
     static std::random_device rd;            
@@ -228,16 +259,19 @@ Vec3 vectorInitialize(){
     static std::uniform_real_distribution<double> dist(1.0, 100.0);
     return{dist(gen), dist(gen), dist(gen)};
 }
+
 //displacement = distance between particles
 Vec3 getDisplacement(Vec3 a, Vec3 b){
     Vec3 displacement = a - b;
     return displacement;
 }
+
 //magnitude gets our scalar (R^2 in formula)
 double getMagnitude(Vec3 a){
     double magnitude = std::sqrt((a.x*a.x)+(a.y*a.y)+(a.z*a.z));
     return magnitude;
 }
+
 //gets our direction by dividing by scalar
 Vec3 getDirection(Vec3 a, double magnitude){
     Vec3 direction;
@@ -246,11 +280,13 @@ Vec3 getDirection(Vec3 a, double magnitude){
     direction.z= a.z/magnitude;
     return direction;
 }
+
 //returns Force Applied which is formula 1
 double getForceApplied(double gravity, double mass1, double mass2, double magnitude, double softening){
     double forceApplied = (gravity * mass1 * mass2) / ((magnitude*magnitude) + softening);
     return forceApplied;
 }
+
 //returns Force for final calculations
 Vec3 getForce(double forceApplied, Vec3 direction){
     Vec3 force;
@@ -258,4 +294,21 @@ Vec3 getForce(double forceApplied, Vec3 direction){
     force.y = direction.y * forceApplied;
     force.z = direction.z * forceApplied;
     return force;
+}
+
+//solar system initialization for testing purposes
+//sun -> pluto in order
+void initializeSolarSystem(std::vector<Particle> &Particles) {
+    Particles.clear();
+    Particles.reserve(10);
+    Particles.push_back(Particle(0, 1.9891e30, {0,0,0}, {0,0,0}));  
+    Particles.push_back(Particle(1, 3.285e23, {5.8344e10,0,0}, {0,47870,0})); 
+    Particles.push_back(Particle(2, 4.867e24, {1.07712e11,0,0}, {0,35020,0}));   
+    Particles.push_back(Particle(3, 5.972e24, {1.496e11,0,0}, {0,29780,0}));  
+    Particles.push_back(Particle(4, 6.39e23, {2.27392e11,0,0}, {0,24130,0}));   
+    Particles.push_back(Particle(5, 1.898e27, {7.7792e11,0,0}, {0,13070,0}));   
+    Particles.push_back(Particle(6, 5.683e26, {1.43317e12,0,0}, {0,9680,0}));   
+    Particles.push_back(Particle(7, 8.681e25, {2.87531e12,0,0}, {0,6800,0}));  
+    Particles.push_back(Particle(8, 1.024e26, {4.49548e12,0,0}, {0,5430,0}));
+    Particles.push_back(Particle(9, 7.342e22, {1.49984e11,0,0}, {0,30802,0}));
 }

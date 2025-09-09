@@ -49,46 +49,55 @@ def parse_nbody_output(file_path):
 
     return time_steps
 
-def plot_nbody_trajectories(time_steps, output_pdf):
+def plot_nbody_trajectories(time_steps, output_pdf, default_arrow_scale=1e-3):
     """
     Plot the (x, y) positions of particles for each time step and save to a PDF.
 
     Parameters:
         time_steps (list): List of time steps with particle data.
         output_pdf (str): Path to the output PDF file.
+        default_arrow_scale (float): Default scale for velocity arrows.
     """
     all_x = [p['x'] for step in time_steps for p in step]
     all_y = [p['y'] for step in time_steps for p in step]
+
     x_min, x_max = min(all_x), max(all_x)
     y_min, y_max = min(all_y), max(all_y)
-    
+
+    # Force the axes to start at -3e11 meters
+    x_min = min(x_min, -3e11)
+    y_min = min(y_min, -3e11)
+
+    # Arrow scale (can override via global variable or argument)
+    arrow_scale = default_arrow_scale
+
     with PdfPages(output_pdf) as pdf:
         for t, particles in enumerate(time_steps):
             plt.figure(figsize=(8, 8))
             plt.title(f"Time Step {t + 1}")
-            plt.xlabel("x-coordinate")
-            plt.ylabel("y-coordinate")
+            plt.xlabel("x-coordinate (m)")
+            plt.ylabel("y-coordinate (m)")
 
             x_coords = [p['x'] for p in particles]
             y_coords = [p['y'] for p in particles]
             vx = [p['vx'] for p in particles]
             vy = [p['vy'] for p in particles]
-            
+
             plt.scatter(x_coords, y_coords, s=10, c='blue', label="Particles")
+
             # Add velocity arrows
             for x, y, vx_i, vy_i in zip(x_coords, y_coords, vx, vy):
-                plt.arrow(x, y, vx_i*arrow_scale, vy_i*arrow_scale, length_includes_head=True, fc='red', ec='red')
-                # width=(math.sqrt(vx_i*vx_i+vy_i*vy_i))
+                plt.arrow(x, y, vx_i*arrow_scale, vy_i*arrow_scale,
+                          length_includes_head=True, fc='red', ec='red')
 
             plt.xlim(x_min, x_max)
             plt.ylim(y_min, y_max)
-
-                
             plt.legend()
             plt.grid(True)
 
-            pdf.savefig()  # Save the current figure to the PDF
+            pdf.savefig()
             plt.close()
+
 
 if __name__ == "__main__":
     input_file = sys.argv[1]  # input of the plotter-- aka output of the sim code
