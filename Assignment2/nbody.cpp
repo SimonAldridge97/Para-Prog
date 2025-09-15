@@ -239,7 +239,7 @@ for (auto &p : Particles) {
 //helper function for user input
 size_t getInput(const std::string &prompt) {
     size_t value;
-    std::cout << prompt << " ";
+    std::cerr << prompt << " ";
     std::cin >> value;
     return value;
 }
