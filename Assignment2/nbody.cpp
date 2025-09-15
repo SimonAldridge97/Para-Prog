@@ -232,7 +232,7 @@ for (auto &p : Particles) {
     //end timer
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
-    std::cout << "Simulation completed in " << elapsed.count() << " seconds.\n";
+    std::cerr << "Simulation completed in " << elapsed.count() << " seconds.\n";
     return 0;
 }
 
@@ -312,3 +312,31 @@ void initializeSolarSystem(std::vector<Particle> &Particles) {
     Particles.push_back(Particle(8, 1.024e26, {4.49548e12,0,0}, {0,5430,0}));
     Particles.push_back(Particle(9, 7.342e22, {1.49984e11,0,0}, {0,30802,0}));
 }
+
+
+/*
+
+9
+5000000
+200
+1
+
+
+
+
+100
+10000
+1
+1
+
+1000
+10000
+1
+1
+
+
+
+
+
+
+*/
