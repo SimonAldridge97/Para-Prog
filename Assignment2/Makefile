@@ -30,3 +30,7 @@ clean:
 #run
 run: $(TARGET)
 	./$(TARGET)
+
+
+
+
